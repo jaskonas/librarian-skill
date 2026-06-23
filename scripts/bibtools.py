@@ -123,3 +123,37 @@ def format_entry(entry):
 
 def write_bib(entries):
     return "\n\n".join(format_entry(e) for e in entries) + "\n"
+
+
+import string as _string
+
+
+def surname_of(author_field):
+    first = author_field.split(" and ")[0].strip().strip("{}")
+    if "," in first:
+        last = first.split(",")[0]
+    else:
+        parts = first.split()
+        last = parts[-1] if parts else first
+    return "".join(c for c in last if c.isalnum())
+
+
+def base_citekey(author_field, year):
+    y = "".join(c for c in str(year) if c.isdigit())[:4]
+    return surname_of(author_field) + y
+
+
+def mint_citekey(author_field, year, existing):
+    existing = set(existing)
+    base = base_citekey(author_field, year)
+    if base not in existing:
+        return base
+    for letter in _string.ascii_lowercase:
+        cand = base + letter
+        if cand not in existing:
+            return cand
+    # Exhausted a–z: fall back to numeric suffixes.
+    i = 1
+    while base + str(i) in existing:
+        i += 1
+    return base + str(i)

@@ -52,3 +52,23 @@ def test_round_trip():
     entries = bibtools.parse_bib(text)
     reparsed = bibtools.parse_bib(bibtools.write_bib(entries))
     assert reparsed == entries
+
+
+def test_surname_of_handles_formats():
+    assert bibtools.surname_of("MacIntyre, Alasdair") == "MacIntyre"
+    assert bibtools.surname_of("Alasdair MacIntyre") == "MacIntyre"
+    assert bibtools.surname_of("Charles Taylor and Hubert Dreyfus") == "Taylor"
+    assert bibtools.surname_of("{Anonymous}") == "Anonymous"
+
+
+def test_base_citekey():
+    assert bibtools.base_citekey("MacIntyre, Alasdair", "1981") == "MacIntyre1981"
+    assert bibtools.base_citekey("Alasdair MacIntyre", 1981) == "MacIntyre1981"
+
+
+def test_mint_citekey_collisions():
+    existing = {"MacIntyre1981"}
+    assert bibtools.mint_citekey("MacIntyre, Alasdair", 1981, existing) == "MacIntyre1981a"
+    existing.add("MacIntyre1981a")
+    assert bibtools.mint_citekey("MacIntyre, Alasdair", 1981, existing) == "MacIntyre1981b"
+    assert bibtools.mint_citekey("Charles Taylor", 1989, existing) == "Taylor1989"
