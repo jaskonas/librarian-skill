@@ -30,3 +30,8 @@ citation per book, ordered sensibly (typically alphabetical by first author surn
 
 Show the formatted citation(s) to the user. If they ask to save them into a note, append
 there as **Mixed AI** (prefix each written line with `⚡ `).
+
+If the target note is **Full human** (`fullAI: false`, `mixedAI: false`), do **not** edit
+its body — per `references/provenance.md` the agent never edits human-authored notes. Either
+ask the human to opt the note into Mixed AI first, or offer to write the citation into a
+separate note instead.

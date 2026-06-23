@@ -32,7 +32,11 @@ Parse the `.bib`:
 python scripts/bibtools.py parse "<bib_path>"
 ```
 
-- `.bib` entries whose `citekey` matches **no** note.
+Consider **`@book` entries only** — the librarian manages books, so non-book entries
+(`@article`, `@techreport`, `@misc`, archival, …) are **not** orphans and must not be
+reported or touched.
+
+- `@book` entries whose `citekey` matches **no** note.
 - Book notes whose `citekey` matches **no** `.bib` entry (or that have no citekey at all).
 
 **Report only — never delete.** (Sync handles notes-missing-from-`.bib` by adding them when

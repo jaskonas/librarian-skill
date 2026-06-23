@@ -48,10 +48,12 @@ rather than passing it as a CLI argument. (`.base` files are not provenance-mark
 ## 5. Create the `.bib` file if absent
 
 The `.bib` lives on disk, not in the vault. Create an empty file at `bib_path` if one does
-not already exist (do not clobber an existing `.bib`):
+not already exist (do not clobber an existing `.bib`). Resolve `bib_path` against the vault
+root when it is relative (e.g. the default `Library/library.bib`), so the file lands inside
+the vault rather than the current working directory:
 
 ```bash
-[ -f "<bib_path>" ] || : > "<bib_path>"
+[ -f "<vault root>/<bib_path>" ] || : > "<vault root>/<bib_path>"
 ```
 
 ## 6. Offer the vault operating contract

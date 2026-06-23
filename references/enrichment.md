@@ -30,7 +30,9 @@ https://www.googleapis.com/books/v1/volumes?q=isbn:<isbn>
 https://www.googleapis.com/books/v1/volumes?q=intitle:<url-encoded-title>+inauthor:<url-encoded-author>
 ```
 
-URL-encode title and author values (spaces → `%20`, etc.). When searching by title, prefer
+URL-encode title and author values (spaces → `%20`, etc.); omit the `&author=` /
+`+inauthor:` segment entirely when no author is known (don't send it empty). When searching
+by title, prefer
 the result whose title and author best match what the user gave; if several are plausible,
 that is an *ambiguous match* — see the fallback rule.
 

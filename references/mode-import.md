@@ -7,6 +7,11 @@ write**.
 Read `references/conventions.md` and `references/provenance.md` first. Load
 `Library/config.md` for `books_folder`, `bib_path`, `vault_name`.
 
+> **Book-only scope (v1).** The librarian manages **`@book` entries only**. A `.bib` may
+> also hold non-book material (`@article`, `@techreport`, `@misc`, archival entries, …) —
+> **ignore those**: never create notes for them and never modify them. Filter to
+> `entry["type"] == "book"` everywhere below.
+
 ## Path A — from a `.bib` file
 
 1. Parse the file:
@@ -15,8 +20,8 @@ Read `references/conventions.md` and `references/provenance.md` first. Load
    python scripts/bibtools.py parse "<bib_path>"
    ```
 
-2. For each entry, check whether a note with that `citekey` already exists (search
-   frontmatter):
+2. Keep only entries whose `type` is `book`; skip all others. For each remaining entry,
+   check whether a note with that `citekey` already exists (search frontmatter):
 
    ```bash
    obsidian vault=<vault-name> search query="citekey: <citekey>" limit=1

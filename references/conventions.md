@@ -4,6 +4,13 @@ Shared rules for how the librarian skill is laid out in a vault and how every mo
 (Setup, New book, Sync, Import, Audit, Cite) operates on it. Read this file — and
 `references/provenance.md` — before doing anything else.
 
+## Scope: books only (v1)
+
+The librarian manages **`@book` entries** and their book notes. A `.bib` may also hold
+non-book material — `@article`, `@techreport`, `@misc`, archival entries, and so on. Treat
+those as **out of scope**: Sync, Import, and Audit must filter to `type == "book"` and must
+never create, edit, or report non-book entries. They are the human's to manage by hand.
+
 ## The Library folder
 
 All librarian state lives in a top-level folder, by default `Library/` (configurable —

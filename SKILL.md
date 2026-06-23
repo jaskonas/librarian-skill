@@ -12,6 +12,11 @@ configurable folder (default `Library/`), never in this skill.
 Deterministic work (`.bib` parse/write, citekey minting, ISBN checks, CSV import) is done by
 `scripts/bibtools.py` (Python stdlib only). Vault I/O goes through the **obsidian-cli** skill.
 
+**Scope (v1): books only.** The librarian manages `@book` entries and their book notes. A
+`.bib` may also contain non-book material (`@article`, `@techreport`, `@misc`, archival
+entries, …); the librarian **leaves those untouched** — it never creates notes for them,
+never edits them, and never reports them as orphans.
+
 ## Always read first
 
 - `references/conventions.md` — folder layout, book-note schema, citekey rules, the bibtools

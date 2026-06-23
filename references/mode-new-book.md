@@ -46,6 +46,11 @@ Fill `templates/BookNote.md`, including the captured `citekey`, and write it to
 **Mixed AI** — the librarian writes the frontmatter and a stub body (each AI line prefixed
 `⚡ `), and the human fills in their own summary/notes/quotes.
 
+Fill **every** `{{token}}` — leave none literal in the written YAML. Set `status` to
+`to-read` for a new book unless the user says otherwise. Leave the optional fields the user
+hasn't given — `rating`, `date_started`, `date_finished`, and any unknown `publisher`/
+`pages` — **empty** (e.g. `rating:` with no value), never the literal `{{rating}}`.
+
 ```bash
 obsidian vault=<vault-name> create path="<books_folder>/<sanitized title>.md" content="<filled BookNote template>" silent
 obsidian vault=<vault-name> property:set name="fullAI"  value="false" path="<books_folder>/<sanitized title>.md"
