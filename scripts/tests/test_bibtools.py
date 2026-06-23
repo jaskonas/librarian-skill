@@ -99,3 +99,42 @@ def test_parse_goodreads_csv():
     assert b["status"] == "read"
     assert books[1]["status"] == "to-read"
     assert books[1]["rating"] == ""             # 0 rating becomes empty
+
+
+import subprocess, json
+
+SCRIPT = os.path.join(os.path.dirname(__file__), "..", "bibtools.py")
+
+
+def _run(*args):
+    return subprocess.run([sys.executable, SCRIPT, *args],
+                          capture_output=True, text=True)
+
+
+def test_cli_check_isbn():
+    ok = _run("check-isbn", "978-0-268-03504-4")
+    assert ok.returncode == 0
+    assert ok.stdout.strip() == "9780268035044"
+    bad = _run("check-isbn", "978-0-268-03504-5")
+    assert bad.returncode == 1
+
+
+def test_cli_parse(tmp_path):
+    bib = tmp_path / "x.bib"
+    bib.write_text("@book{A2000,\n  author = {Doe, Jane},\n  title = {T},\n  year = {2000}\n}\n")
+    out = _run("parse", str(bib))
+    assert out.returncode == 0
+    data = json.loads(out.stdout)
+    assert data[0]["citekey"] == "A2000"
+
+
+def test_cli_upsert_mints_key(tmp_path):
+    bib = tmp_path / "x.bib"
+    bib.write_text("")
+    payload = json.dumps({"type": "book", "author": "Alasdair MacIntyre",
+                          "fields": {"author": "MacIntyre, Alasdair",
+                                     "title": "After Virtue", "year": "1981"}})
+    out = _run("upsert", "--bib", str(bib), "--json", payload)
+    assert out.returncode == 0
+    assert out.stdout.strip() == "MacIntyre1981"
+    assert "MacIntyre1981" in bib.read_text()

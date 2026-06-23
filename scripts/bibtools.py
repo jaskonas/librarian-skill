@@ -201,3 +201,71 @@ def parse_goodreads_csv(text):
             "date_finished": ((row.get("Date Read", "") or "") or "").strip().replace("/", "-"),
         })
     return books
+
+
+import argparse as _argparse
+import json as _json
+import sys as _sys
+import os as _os
+
+
+def _read_bib(path):
+    if path and _os.path.exists(path):
+        with open(path) as f:
+            return parse_bib(f.read())
+    return []
+
+
+def main(argv=None):
+    parser = _argparse.ArgumentParser(prog="bibtools")
+    sub = parser.add_subparsers(dest="cmd", required=True)
+
+    p = sub.add_parser("check-isbn"); p.add_argument("isbn")
+    p = sub.add_parser("parse"); p.add_argument("bibfile")
+    p = sub.add_parser("mint-key")
+    p.add_argument("--bib", required=True); p.add_argument("--author", required=True)
+    p.add_argument("--year", required=True)
+    p = sub.add_parser("upsert")
+    p.add_argument("--bib", required=True); p.add_argument("--json", required=True)
+    p = sub.add_parser("import-goodreads"); p.add_argument("csvfile")
+
+    args = parser.parse_args(argv)
+
+    if args.cmd == "check-isbn":
+        if valid_isbn(args.isbn):
+            print(normalize_isbn(args.isbn)); return 0
+        print("invalid", file=_sys.stderr); return 1
+
+    if args.cmd == "parse":
+        with open(args.bibfile) as f:
+            print(_json.dumps(parse_bib(f.read()), indent=2)); return 0
+
+    if args.cmd == "mint-key":
+        existing = {e["citekey"] for e in _read_bib(args.bib)}
+        print(mint_citekey(args.author, args.year, existing)); return 0
+
+    if args.cmd == "upsert":
+        entries = _read_bib(args.bib)
+        payload = _json.loads(args.json)
+        citekey = payload.get("citekey")
+        if not citekey:
+            existing = {e["citekey"] for e in entries}
+            author = payload.get("author") or payload.get("fields", {}).get("author", "")
+            year = payload.get("fields", {}).get("year", "")
+            citekey = mint_citekey(author, year, existing)
+        entry = {"type": payload.get("type", "book"), "citekey": citekey,
+                 "fields": payload.get("fields", {})}
+        upsert_entry(entries, entry)
+        with open(args.bib, "w") as f:
+            f.write(write_bib(entries))
+        print(citekey); return 0
+
+    if args.cmd == "import-goodreads":
+        with open(args.csvfile) as f:
+            print(_json.dumps(parse_goodreads_csv(f.read()), indent=2)); return 0
+
+    return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
