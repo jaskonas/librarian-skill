@@ -10,4 +10,4 @@ This vault uses the **librarian** skill to keep book notes and a BibTeX file in 
 - **Book notes** live in `{{books_folder}}/` and carry `type: book-note` frontmatter.
 - **Provenance:** mark AI authorship — `fullAI`/`mixedAI` frontmatter, `⚡ ` on AI lines in mixed notes.
 - **Obsidian CLI:** always pass `vault={{vault_name}}`.
-- The collating Base is `{{books_folder}}/Books.base`.
+- The collating Base is `Library/Books.base` (at the librarian home root, alongside `config.md`).

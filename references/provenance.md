@@ -28,8 +28,8 @@ note as Full AI and correct the frontmatter (`mixedAI: false`).
 Set frontmatter with the obsidian CLI:
 
 ```bash
-obsidian vault=<vault-name> property:set name="fullAI" value="false" path="Library/Books/Antifragile.md"
-obsidian vault=<vault-name> property:set name="mixedAI" value="true"  path="Library/Books/Antifragile.md"
+obsidian vault=<vault-name> property:set name="fullAI" value="false" path="Library/Antifragile.md"
+obsidian vault=<vault-name> property:set name="mixedAI" value="true"  path="Library/Antifragile.md"
 ```
 
 ## Inline marking rules
@@ -40,7 +40,7 @@ obsidian vault=<vault-name> property:set name="mixedAI" value="true"  path="Libr
   appends metadata, prefix each line it writes:
 
   ```bash
-  obsidian vault=<vault-name> append path="Library/Books/Antifragile.md" content="⚡ *Stub created by the librarian. Replace this line with your own notes.*"
+  obsidian vault=<vault-name> append path="Library/Antifragile.md" content="⚡ *Stub created by the librarian. Replace this line with your own notes.*"
   ```
 
 - **Full-AI notes (`fullAI: true`):** Do NOT prefix every line. Instead place a single

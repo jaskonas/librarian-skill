@@ -1,23 +1,27 @@
 # Librarian Conventions
 
 Shared rules for how the librarian skill is laid out in a vault and how every mode
-(Setup, New book, Import, Audit, Maintain, …) operates on it. Read this file — and
+(Setup, New book, Sync, Import, Audit, Cite) operates on it. Read this file — and
 `references/provenance.md` — before doing anything else.
 
 ## The Library folder
 
 All librarian state lives in a top-level folder, by default `Library/` (configurable —
-the human may rename it during Setup). Its layout:
+the human may rename it during Setup). Book notes live **directly inside** the books
+folder (flat, no subfolder); `config.md` and `Books.base` sit at the `Library/` root
+alongside them. Default layout:
 
 ```
 Library/
-├── config.md      Records books_folder, bib_path, vault_name (this file's own home)
-├── Books.base      Collating Base view over all book notes
-└── Books/           Individual book notes (one per book, type: book-note)
+├── config.md           Records books_folder, bib_path, vault_name (this file's own home)
+├── Books.base          Collating Base view over all book notes
+├── After Virtue.md     Individual book notes (one per book, type: book-note)
+└── Sources of the Self.md
 ```
 
 `Library/config.md` is the source of truth for paths: it records `books_folder` (where
-book notes live), `bib_path` (the BibTeX file on disk), and `vault_name` (for the
+book notes live, default `Library/`), `bib_path` (the BibTeX file on disk), and
+`vault_name` (for the
 obsidian CLI's `vault=` argument). **Every mode reads `config.md` first** to learn these
 paths — deterministically, before doing anything else. If `config.md` is missing or
 cannot be read, the vault has not been set up yet: route to **Setup** rather than
@@ -69,13 +73,13 @@ All `.bib` file reads and writes go through `scripts/bibtools.py`. Never hand-ed
 python scripts/bibtools.py check-isbn 9780812979688
 
 # Parse a .bib file into a JSON array of entries
-python scripts/bibtools.py parse Library/references.bib
+python scripts/bibtools.py parse Library/library.bib
 
 # Mint a new citekey (AuthorYear + collision suffix) against an existing .bib file
-python scripts/bibtools.py mint-key --bib Library/references.bib --author "Taleb" --year 2012
+python scripts/bibtools.py mint-key --bib Library/library.bib --author "Taleb" --year 2012
 
 # Insert or update an entry by citekey (mints one if omitted; prints the citekey used)
-python scripts/bibtools.py upsert --bib Library/references.bib --json '{"type":"book","author":"Taleb","fields":{"title":"Antifragile","year":"2012"}}'
+python scripts/bibtools.py upsert --bib Library/library.bib --json '{"type":"book","author":"Taleb","fields":{"title":"Antifragile","year":"2012"}}'
 
 # Import a Goodreads export into a JSON array of book dicts
 python scripts/bibtools.py import-goodreads export.csv
@@ -95,16 +99,16 @@ section below if config.md doesn't exist yet (i.e. during Setup).
 
 ```bash
 # Create a note (silent = don't pop it open)
-obsidian vault=<vault-name> create path="Library/Books/Antifragile.md" content="..." silent
+obsidian vault=<vault-name> create path="Library/Antifragile.md" content="..." silent
 
 # Read a note
-obsidian vault=<vault-name> read path="Library/Books/Antifragile.md"
+obsidian vault=<vault-name> read path="Library/Antifragile.md"
 
 # Append a line
-obsidian vault=<vault-name> append path="Library/Books/Antifragile.md" content="⚡ ..."
+obsidian vault=<vault-name> append path="Library/Antifragile.md" content="⚡ ..."
 
 # Set a frontmatter property
-obsidian vault=<vault-name> property:set name="status" value="reading" path="Library/Books/Antifragile.md"
+obsidian vault=<vault-name> property:set name="status" value="reading" path="Library/Antifragile.md"
 
 # Search the wider vault
 obsidian vault=<vault-name> search query="Taleb" limit=10
