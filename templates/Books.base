@@ -1,0 +1,63 @@
+filters:
+  and:
+    - 'type == "book-note"'
+
+formulas:
+  status_icon: 'if(status == "reading", "📖", if(status == "read", "✅", if(status == "abandoned", "🚫", "📚")))'
+
+properties:
+  authors:
+    displayName: Authors
+  year:
+    displayName: Year
+  status:
+    displayName: Status
+  rating:
+    displayName: Rating
+  formula.status_icon:
+    displayName: ""
+
+views:
+  - type: table
+    name: "All Books"
+    order:
+      - formula.status_icon
+      - file.name
+      - authors
+      - year
+      - status
+      - rating
+
+  - type: table
+    name: "By Shelf"
+    groupBy:
+      property: status
+      direction: ASC
+    order:
+      - file.name
+      - authors
+      - year
+      - rating
+
+  - type: table
+    name: "By Rating"
+    filters:
+      and:
+        - 'rating'
+    groupBy:
+      property: rating
+      direction: DESC
+    order:
+      - file.name
+      - authors
+      - year
+
+  - type: table
+    name: "By Year"
+    groupBy:
+      property: year
+      direction: DESC
+    order:
+      - file.name
+      - authors
+      - status
