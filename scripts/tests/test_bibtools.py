@@ -72,3 +72,30 @@ def test_mint_citekey_collisions():
     existing.add("MacIntyre1981a")
     assert bibtools.mint_citekey("MacIntyre, Alasdair", 1981, existing) == "MacIntyre1981b"
     assert bibtools.mint_citekey("Charles Taylor", 1989, existing) == "Taylor1989"
+
+
+def test_upsert_entry_adds_and_merges():
+    entries = [{"type": "book", "citekey": "A2000", "fields": {"title": "Old", "year": "2000"}}]
+    bibtools.upsert_entry(entries, {"type": "book", "citekey": "A2000",
+                                    "fields": {"title": "New", "isbn": "123"}})
+    assert len(entries) == 1
+    assert entries[0]["fields"]["title"] == "New"      # overwritten
+    assert entries[0]["fields"]["year"] == "2000"      # preserved
+    assert entries[0]["fields"]["isbn"] == "123"       # added
+    bibtools.upsert_entry(entries, {"type": "book", "citekey": "B2001", "fields": {}})
+    assert len(entries) == 2
+
+
+def test_parse_goodreads_csv():
+    with open(os.path.join(FIX, "goodreads.csv")) as f:
+        books = bibtools.parse_goodreads_csv(f.read())
+    assert len(books) == 2
+    b = books[0]
+    assert b["title"] == "After Virtue"
+    assert b["authors"] == ["Alasdair MacIntyre"]
+    assert b["year"] == "1981"                  # Original Publication Year preferred
+    assert b["isbn"] == "9780268006112"         # ISBN13 preferred, unwrapped
+    assert b["rating"] == "5"
+    assert b["status"] == "read"
+    assert books[1]["status"] == "to-read"
+    assert books[1]["rating"] == ""             # 0 rating becomes empty

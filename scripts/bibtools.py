@@ -125,6 +125,8 @@ def write_bib(entries):
     return "\n\n".join(format_entry(e) for e in entries) + "\n"
 
 
+import csv as _csv
+import io as _io
 import string as _string
 
 
@@ -157,3 +159,45 @@ def mint_citekey(author_field, year, existing):
     while base + str(i) in existing:
         i += 1
     return base + str(i)
+
+
+def upsert_entry(entries, entry):
+    for existing in entries:
+        if existing["citekey"] == entry["citekey"]:
+            existing.setdefault("fields", {}).update(entry.get("fields", {}))
+            if entry.get("type"):
+                existing["type"] = entry["type"]
+            return entries
+    entries.append(entry)
+    return entries
+
+
+_SHELF = {"read": "read", "currently-reading": "reading"}
+
+
+def parse_goodreads_csv(text):
+    books = []
+    reader = _csv.DictReader(_io.StringIO(text))
+    for row in reader:
+        authors = [row.get("Author", "") or ""]
+        authors = [a.strip() for a in authors if a]
+        extra = (row.get("Additional Authors", "") or "").strip()
+        if extra:
+            authors += [a.strip() for a in extra.split(",") if a.strip()]
+        year = ((row.get("Original Publication Year", "") or "") or (row.get("Year Published", "") or "")).strip()
+        isbn = normalize_isbn(row.get("ISBN13", "") or "") or normalize_isbn(row.get("ISBN", "") or "") or ""
+        rating = (row.get("My Rating", "") or "0").strip()
+        rating = "" if rating in ("", "0") else rating
+        shelf = (row.get("Exclusive Shelf", "") or "").strip()
+        books.append({
+            "title": (row.get("Title", "") or "").strip(),
+            "authors": authors,
+            "year": year,
+            "isbn": isbn,
+            "rating": rating,
+            "status": _SHELF.get(shelf, "to-read"),
+            "pages": (row.get("Number of Pages", "") or "").strip(),
+            "publisher": (row.get("Publisher", "") or "").strip(),
+            "date_finished": ((row.get("Date Read", "") or "") or "").strip().replace("/", "-"),
+        })
+    return books
