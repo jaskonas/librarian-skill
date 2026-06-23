@@ -35,3 +35,91 @@ def valid_isbn(raw):
         val = 10 if ch == "X" else int(ch)
         total += (10 - i) * val
     return total % 11 == 0
+
+
+_FIELD_ORDER = ["author", "title", "year", "publisher", "isbn"]
+
+
+def parse_bib(text):
+    """Tolerant BibTeX parser. Returns a list of entry dicts."""
+    entries = []
+    i = 0
+    n = len(text)
+    while True:
+        at = text.find("@", i)
+        if at == -1:
+            break
+        brace = text.find("{", at)
+        if brace == -1:
+            break
+        etype = text[at + 1:brace].strip().lower()
+        # Walk to the matching closing brace, tracking depth.
+        depth = 1
+        j = brace + 1
+        while j < n and depth > 0:
+            if text[j] == "{":
+                depth += 1
+            elif text[j] == "}":
+                depth -= 1
+            j += 1
+        body = text[brace + 1:j - 1]
+        comma = body.find(",")
+        citekey = body[:comma].strip() if comma != -1 else body.strip()
+        fields = _parse_fields(body[comma + 1:]) if comma != -1 else {}
+        entries.append({"type": etype, "citekey": citekey, "fields": fields})
+        i = j
+    return entries
+
+
+def _parse_fields(body):
+    fields = {}
+    i, n = 0, len(body)
+    while i < n:
+        eq = body.find("=", i)
+        if eq == -1:
+            break
+        name = body[i:eq].strip().strip(",").lower()
+        # Find the value: either {..}, "..", or a bareword up to comma.
+        k = eq + 1
+        while k < n and body[k] in " \t\r\n":
+            k += 1
+        if k < n and body[k] in "{\"":
+            opener = body[k]
+            closer = "}" if opener == "{" else "\""
+            depth = 1
+            m = k + 1
+            while m < n and depth > 0:
+                if opener == "{" and body[m] == "{":
+                    depth += 1
+                elif body[m] == closer:
+                    depth -= 1
+                m += 1
+            value = body[k + 1:m - 1]
+            i = body.find(",", m)
+        else:
+            comma = body.find(",", k)
+            end = comma if comma != -1 else n
+            value = body[k:end].strip()
+            i = comma
+        if name:
+            fields[name] = " ".join(value.split())
+        if i == -1:
+            break
+        i += 1
+    return fields
+
+
+def format_entry(entry):
+    fields = entry.get("fields", {})
+    ordered = [k for k in _FIELD_ORDER if k in fields]
+    ordered += sorted(k for k in fields if k not in _FIELD_ORDER)
+    lines = ["@{}{{{},".format(entry.get("type", "book"), entry["citekey"])]
+    for idx, k in enumerate(ordered):
+        comma = "," if idx < len(ordered) - 1 else ""
+        lines.append("  {} = {{{}}}{}".format(k, fields[k], comma))
+    lines.append("}")
+    return "\n".join(lines)
+
+
+def write_bib(entries):
+    return "\n\n".join(format_entry(e) for e in entries) + "\n"
