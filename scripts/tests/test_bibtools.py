@@ -176,7 +176,7 @@ def test_match_by_isbn_is_definitive():
 def test_match_by_title_and_author():
     res = bibtools.match_entries(_entries(), title="The Sources of the Self", author="Charles Taylor")
     assert res[0]["citekey"] == "Taylor1989"
-    assert res[0]["score"] == 90  # contained title (40) + surname (30)... see scoring
+    assert res[0]["score"] == 90  # exact title after article-strip (60) + surname (30)
 
 
 def test_match_exact_title_no_author():
