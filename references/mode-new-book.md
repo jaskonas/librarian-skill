@@ -27,12 +27,31 @@ metadata enrichment per `references/enrichment.md`:
 
 ## 3. Insert the `.bib` entry
 
-Upsert the entry; omit `citekey` so the script mints an `AuthorYear` key (with collision
-suffix) and prints the key it used:
+**Check for an existing entry before minting a new one** — this prevents a duplicate
+`.bib` entry for a book that's already present under a different note:
 
 ```bash
-python scripts/bibtools.py upsert --bib "<bib_path>" --json '{"type":"book","author":"<author>","fields":{"author":"<author>","title":"<title>","year":"<year>","isbn":"<isbn>","publisher":"<publisher>"}}'
+python scripts/bibtools.py match --bib "<bib_path>" --isbn "<isbn>" --title "<title>" --author "<author>"
 ```
+
+Omit any flag whose value you don't have. The script prints a JSON array of candidates,
+each `{"citekey","score","fields"}`, sorted best-first (a score of 100 means the ISBN
+matched exactly; lower scores are title/author matches and weaker).
+
+- **Confident match found** (top result, especially an ISBN match): show it to the user —
+  citekey and fields — and ask whether to reuse it. On confirmation, **pass that citekey**
+  in the `upsert` payload so no new key is minted:
+
+  ```bash
+  python scripts/bibtools.py upsert --bib "<bib_path>" --json '{"type":"book","citekey":"<matched citekey>","author":"<author>","fields":{"author":"<author>","title":"<title>","year":"<year>","isbn":"<isbn>","publisher":"<publisher>"}}'
+  ```
+
+- **No match (`[]`), or the user declines the suggested match:** omit `citekey` so the
+  script mints an `AuthorYear` key (with collision suffix) and prints the key it used:
+
+  ```bash
+  python scripts/bibtools.py upsert --bib "<bib_path>" --json '{"type":"book","author":"<author>","fields":{"author":"<author>","title":"<title>","year":"<year>","isbn":"<isbn>","publisher":"<publisher>"}}'
+  ```
 
 Capture the printed **citekey** — it is the join key that ties the note to this entry. The
 top-level `"author"` is used only for minting; the `"fields"` object is what gets stored in
