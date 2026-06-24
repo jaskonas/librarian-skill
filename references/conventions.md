@@ -1,7 +1,7 @@
 # Librarian Conventions
 
 Shared rules for how the librarian skill is laid out in a vault and how every mode
-(Setup, New book, Sync, Import, Audit, Cite) operates on it. Read this file — and
+(Setup, New book, Sync, Import, Adopt, Audit, Cite) operates on it. Read this file — and
 `references/provenance.md` — before doing anything else.
 
 ## Scope: books only (v1)
@@ -62,18 +62,23 @@ pages: <pages>
   the same string identifies "this note" and "this BibTeX entry." Never let a note's
   `citekey` drift out of sync with its `.bib` entry.
 
+Book notes are identified **solely** by the `type: book-note` property — not by folder,
+tag, or filename. A note the human wrote before the librarian existed only becomes a
+managed book note once it carries this property; **Adopt** (`references/mode-adopt.md`)
+is how a pre-existing note acquires it, in place.
+
 ## Citekey rules
 
 Citekeys follow the `AuthorYear` convention (e.g. `MacIntyre1981`), with a lowercase
 `a`/`b`/`c` suffix appended on collision (`MacIntyre1981a`, `MacIntyre1981b`, …).
-Citekeys are **always minted by `scripts/bibtools.py mint-key`**, never typed by hand —
-this guarantees the collision suffixing stays consistent with whatever is already in the
-`.bib` file.
+Citekeys are always minted by `bibtools.py` (via `mint-key`, or automatically by `upsert`
+when no citekey is supplied), never by hand — this guarantees the collision suffixing
+stays consistent with whatever is already in the `.bib` file.
 
 ## The bibtools CLI
 
 All `.bib` file reads and writes go through `scripts/bibtools.py`. Never hand-edit a
-`.bib` file or reimplement BibTeX parsing — shell out to the script. Its five commands:
+`.bib` file or reimplement BibTeX parsing — shell out to the script. Its six commands:
 
 ```bash
 # Validate and normalize an ISBN (exit 0 + prints normalized form if valid; exit 1 + stderr "invalid" otherwise)
@@ -87,6 +92,10 @@ python scripts/bibtools.py mint-key --bib Library/library.bib --author "Taleb" -
 
 # Insert or update an entry by citekey (mints one if omitted; prints the citekey used)
 python scripts/bibtools.py upsert --bib Library/library.bib --json '{"type":"book","author":"Taleb","fields":{"title":"Antifragile","year":"2012"}}'
+
+# Find best-matching .bib entries for a note being adopted (prints a JSON array of
+# {citekey, score, fields}, or [] if nothing matches); omit any of --isbn/--title/--author you lack
+python scripts/bibtools.py match --bib Library/library.bib --isbn 9780812979688 --title "Antifragile" --author "Taleb"
 
 # Import a Goodreads export into a JSON array of book dicts
 python scripts/bibtools.py import-goodreads export.csv

@@ -69,4 +69,6 @@ apply — but keep its "authored by the librarian skill" comment.
 Summarize what was created (`config.md`, `Books.base`, the `.bib`, and `CLAUDE.md` if
 accepted), and tell the user how to add their first book — point them to **New book** (e.g.
 "give me an ISBN or a title and I'll create the note"). Remind them that any book note they
-edit by hand is treated as human-authored (bare lines, no `⚡`).
+edit by hand is treated as human-authored (bare lines, no `⚡`). If the vault may already
+contain book notes from before the librarian existed, offer **Adopt**: "I can scan existing
+notes and bring them under management — want to run Adopt now?"

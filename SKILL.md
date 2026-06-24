@@ -41,6 +41,8 @@ never edits them, and never reports them as orphans.
   → `references/mode-sync.md`
 - **Import** — create notes from a `.bib`, or bulk-import Goodreads/Zotero.
   → `references/mode-import.md`
+- **Adopt** — bring existing vault notes under management (stamp `type: book-note`, match
+  the `.bib`, interview). → `references/mode-adopt.md`
 - **Audit** — validation/lint, duplicates, orphans; write `_Health.md`.
   → `references/mode-audit.md`
 - **Cite** — export a formatted citation (always asks the style).

@@ -53,6 +53,7 @@ python scripts/bibtools.py import-goodreads <file.csv>                         #
 | New book | Create one note from an ISBN/title, enrich, log it in the `.bib`. |
 | Sync | Reconcile vault notes into the `.bib` (vault → `.bib`). |
 | Import | Create notes from a `.bib`, or bulk-import a Goodreads CSV / Zotero export. |
+| Adopt | Bring existing notes under management: match the .bib, interview, stamp `type`. |
 | Audit | Validation/lint, duplicate detection, orphan reconciliation → `_Health.md`. |
 | Cite | Export a formatted citation (always asks the style). |
 
@@ -72,6 +73,8 @@ Run these against a real vault after install:
       `citekey` into the note's frontmatter.
 - [ ] **Import** creates notes for `.bib` entries that lack them; Goodreads CSV import
       produces notes.
+- [ ] **Adopt** finds a hand-made note, matches it to the `.bib` or mints a key, and
+      stamps `type: book-note` in place.
 - [ ] **Audit** writes `_Health.md` listing orphans/duplicates **without deleting** anything.
 - [ ] **Cite** asks which style, then prints a formatted citation.
 - [ ] Open `Books.base` in Obsidian and confirm the four views (All Books, By Shelf, By
