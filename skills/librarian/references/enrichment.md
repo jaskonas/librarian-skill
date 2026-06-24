@@ -55,7 +55,7 @@ Extract the 4-digit year from free-form date strings (e.g. `"April 1981"` → `1
 Before trusting any ISBN — whether the user typed it or a lookup returned it — validate it:
 
 ```bash
-python scripts/bibtools.py check-isbn <isbn>
+python "${CLAUDE_PLUGIN_ROOT}/skills/librarian/scripts/bibtools.py" check-isbn <isbn>
 ```
 
 Exit 0 prints the normalized ISBN (use that normalized form); exit 1 means the ISBN is

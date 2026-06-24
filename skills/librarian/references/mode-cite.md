@@ -18,7 +18,7 @@ Figure out what to cite:
 - A **set** — e.g. "all `read` books", "everything by <author>", or a list the user gives.
 
 Find the matching notes (`obsidian search`), or read the matching entries from the `.bib`
-via `python scripts/bibtools.py parse "<bib_path>"`.
+via `python "${CLAUDE_PLUGIN_ROOT}/skills/librarian/scripts/bibtools.py" parse "<bib_path>"`.
 
 ## 3. Format
 

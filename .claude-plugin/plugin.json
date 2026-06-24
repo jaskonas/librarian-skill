@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "librarian",
+  "version": "0.1.0",
+  "description": "Bridge an Obsidian vault of book notes and a BibTeX .bib file: set up a library, add/import/adopt books, keep notes and the .bib in sync, audit, build a collating Base, and export citations. Vault is canonical; books-only (v1).",
+  "author": {
+    "name": "Jon Askonas"
+  },
+  "homepage": "https://github.com/jaskonas/librarian-skill",
+  "keywords": ["obsidian", "bibtex", "bibliography", "books", "zotero", "citations"]
+}

@@ -17,11 +17,19 @@ script, never by hand.
 
 ## Install
 
-1. Copy the `librarian-skill/` directory into your Claude skills directory.
-2. To enable the delegated/scheduled agent, copy `agents/librarian.md` into `.claude/agents/`
-   (or a plugin's `agents/` directory).
+This repo is a **Claude Code plugin**. The skill (`skills/librarian/`) and the agent
+(`agents/librarian.md`) are auto-discovered on install — no manual copying.
 
-No runtime dependencies beyond Python 3 — `scripts/bibtools.py` uses only the standard
+- **As a local plugin** (this repo as its own marketplace-less plugin): add it via a
+  marketplace that points at this repo, or place the repo under a skills directory; the
+  `.claude-plugin/plugin.json` manifest makes it a plugin named `librarian`. Then `/librarian`
+  is available and the `librarian` agent is invokable.
+- **Nested inside a larger plugin:** drop `skills/librarian/` into the parent plugin's
+  `skills/` and `agents/librarian.md` into its `agents/`. No path edits are needed — the
+  helper is referenced as `${CLAUDE_PLUGIN_ROOT}/skills/librarian/scripts/bibtools.py`, which
+  resolves correctly under either plugin root.
+
+No runtime dependencies beyond Python 3 — the bundled `bibtools.py` uses only the standard
 library. Vault I/O uses the `obsidian-cli` skill (Obsidian must be running).
 
 ## Getting started
@@ -33,14 +41,17 @@ book", "sync", "import my .bib", "audit", and "cite" all work.
 
 ## `bibtools.py` CLI
 
-The deterministic core. Modes shell out to these; you can also run them directly:
+The deterministic core (`skills/librarian/scripts/bibtools.py`). Modes shell out to it via
+`${CLAUDE_PLUGIN_ROOT}/skills/librarian/scripts/bibtools.py`; the short form below is for
+running it directly from the repo:
 
 ```bash
-python scripts/bibtools.py check-isbn <isbn>                                   # validate + normalize an ISBN
-python scripts/bibtools.py parse <file.bib>                                    # .bib → JSON array of entries
-python scripts/bibtools.py mint-key --bib <file.bib> --author "<author>" --year <year>   # next free AuthorYear citekey
-python scripts/bibtools.py upsert --bib <file.bib> --json '<entry-json>'       # insert/update by citekey (mints if omitted)
-python scripts/bibtools.py import-goodreads <file.csv>                         # Goodreads CSV → JSON book dicts
+python bibtools.py check-isbn <isbn>                                   # validate + normalize an ISBN
+python bibtools.py parse <file.bib>                                    # .bib → JSON array of entries
+python bibtools.py mint-key --bib <file.bib> --author "<author>" --year <year>   # next free AuthorYear citekey
+python bibtools.py upsert --bib <file.bib> --json '<entry-json>'       # insert/update by citekey (mints if omitted)
+python bibtools.py match --bib <file.bib> [--isbn X] [--title T] [--author A]     # best-matching entries (JSON array)
+python bibtools.py import-goodreads <file.csv>                         # Goodreads CSV → JSON book dicts
 ```
 
 `upsert` payload shape: `{"type":"book","citekey":"<optional>","author":"<for minting>","fields":{...}}`.
@@ -60,7 +71,7 @@ python scripts/bibtools.py import-goodreads <file.csv>                         #
 ## Running the dev tests
 
 ```bash
-python -m pytest scripts/tests/ -v
+python -m pytest skills/librarian/scripts/tests/ -v
 ```
 
 ## Manual verification checklist

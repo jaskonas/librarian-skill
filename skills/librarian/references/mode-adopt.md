@@ -24,7 +24,7 @@ Parse the `.bib` once and keep the result in memory for the rest of this mode â€
 candidate gets matched against it in Stage 2:
 
 ```bash
-python scripts/bibtools.py parse "<bib_path>"
+python "${CLAUDE_PLUGIN_ROOT}/skills/librarian/scripts/bibtools.py" parse "<bib_path>"
 ```
 
 ## 2. Gather candidates
@@ -66,7 +66,7 @@ For each confirmed note, in turn:
 2. **Run `match`** to find candidate `.bib` entries for this note:
 
    ```bash
-   python scripts/bibtools.py match --bib "<bib_path>" --title "<t>" --author "<a>" --isbn "<i>"
+   python "${CLAUDE_PLUGIN_ROOT}/skills/librarian/scripts/bibtools.py" match --bib "<bib_path>" --title "<t>" --author "<a>" --isbn "<i>"
    ```
 
    This prints a JSON array of best matches (each with `citekey`, `score`, `fields`),
@@ -86,7 +86,7 @@ For each adopted note, resolve exactly one citekey, in this priority order:
 3. Else, **mint** a fresh one by calling `upsert` with `citekey` omitted:
 
    ```bash
-   python scripts/bibtools.py upsert --bib "<bib_path>" --json '{"type":"book","author":"<author>","fields":{"author":"<author>","title":"<title>","year":"<year>","isbn":"<isbn>","publisher":"<publisher>"}}'
+   python "${CLAUDE_PLUGIN_ROOT}/skills/librarian/scripts/bibtools.py" upsert --bib "<bib_path>" --json '{"type":"book","author":"<author>","fields":{"author":"<author>","title":"<title>","year":"<year>","isbn":"<isbn>","publisher":"<publisher>"}}'
    ```
 
    Capture the printed citekey.
@@ -136,7 +136,7 @@ Then ensure the `.bib` has the entry, reusing the resolved citekey so this write
 update rather than an insert when the entry already existed:
 
 ```bash
-python scripts/bibtools.py upsert --bib "<bib_path>" --json '{"type":"book","citekey":"<resolved citekey>","author":"<author>","fields":{"author":"<author>","title":"<title>","year":"<year>","isbn":"<isbn>","publisher":"<publisher>"}}'
+python "${CLAUDE_PLUGIN_ROOT}/skills/librarian/scripts/bibtools.py" upsert --bib "<bib_path>" --json '{"type":"book","citekey":"<resolved citekey>","author":"<author>","fields":{"author":"<author>","title":"<title>","year":"<year>","isbn":"<isbn>","publisher":"<publisher>"}}'
 ```
 
 Adopted notes are identified purely by `type: book-note`, not by folder â€” the

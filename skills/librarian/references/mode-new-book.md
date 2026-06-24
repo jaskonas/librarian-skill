@@ -19,7 +19,7 @@ Read `books_folder`, `bib_path`, and `vault_name`. If `config.md` is missing →
 Accept whatever the user has: an **ISBN**, a **title**, or a **title + author**. Then run
 metadata enrichment per `references/enrichment.md`:
 
-- Validate any ISBN with `python scripts/bibtools.py check-isbn <isbn>` and use the
+- Validate any ISBN with `python "${CLAUDE_PLUGIN_ROOT}/skills/librarian/scripts/bibtools.py" check-isbn <isbn>` and use the
   normalized form it prints.
 - Fetch missing fields (authors, year, publisher, pages) from Open Library → Google Books.
 - **Confirm the fields with the user** (show them as a diff/proposal) before writing
@@ -31,7 +31,7 @@ metadata enrichment per `references/enrichment.md`:
 `.bib` entry for a book that's already present under a different note:
 
 ```bash
-python scripts/bibtools.py match --bib "<bib_path>" --isbn "<isbn>" --title "<title>" --author "<author>"
+python "${CLAUDE_PLUGIN_ROOT}/skills/librarian/scripts/bibtools.py" match --bib "<bib_path>" --isbn "<isbn>" --title "<title>" --author "<author>"
 ```
 
 Omit any flag whose value you don't have. The script prints a JSON array of candidates,
@@ -43,14 +43,14 @@ matched exactly; lower scores are title/author matches and weaker).
   in the `upsert` payload so no new key is minted:
 
   ```bash
-  python scripts/bibtools.py upsert --bib "<bib_path>" --json '{"type":"book","citekey":"<matched citekey>","author":"<author>","fields":{"author":"<author>","title":"<title>","year":"<year>","isbn":"<isbn>","publisher":"<publisher>"}}'
+  python "${CLAUDE_PLUGIN_ROOT}/skills/librarian/scripts/bibtools.py" upsert --bib "<bib_path>" --json '{"type":"book","citekey":"<matched citekey>","author":"<author>","fields":{"author":"<author>","title":"<title>","year":"<year>","isbn":"<isbn>","publisher":"<publisher>"}}'
   ```
 
 - **No match (`[]`), or the user declines the suggested match:** omit `citekey` so the
   script mints an `AuthorYear` key (with collision suffix) and prints the key it used:
 
   ```bash
-  python scripts/bibtools.py upsert --bib "<bib_path>" --json '{"type":"book","author":"<author>","fields":{"author":"<author>","title":"<title>","year":"<year>","isbn":"<isbn>","publisher":"<publisher>"}}'
+  python "${CLAUDE_PLUGIN_ROOT}/skills/librarian/scripts/bibtools.py" upsert --bib "<bib_path>" --json '{"type":"book","author":"<author>","fields":{"author":"<author>","title":"<title>","year":"<year>","isbn":"<isbn>","publisher":"<publisher>"}}'
   ```
 
 Capture the printed **citekey** — it is the join key that ties the note to this entry. The

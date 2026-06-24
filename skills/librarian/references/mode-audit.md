@@ -14,7 +14,7 @@ Read `references/conventions.md` and `references/provenance.md` first. Load
 For every `type: book-note`:
 
 - Required fields present and non-empty: `title`, `authors`, `year`, `citekey`.
-- ISBN (if present) passes validation: `python scripts/bibtools.py check-isbn <isbn>`.
+- ISBN (if present) passes validation: `python "${CLAUDE_PLUGIN_ROOT}/skills/librarian/scripts/bibtools.py" check-isbn <isbn>`.
 - `status` is one of exactly: `to-read`, `reading`, `read`, `abandoned`.
 - `year` is a plausible 3–4 digit number.
 
@@ -29,7 +29,7 @@ For every `type: book-note`:
 Parse the `.bib`:
 
 ```bash
-python scripts/bibtools.py parse "<bib_path>"
+python "${CLAUDE_PLUGIN_ROOT}/skills/librarian/scripts/bibtools.py" parse "<bib_path>"
 ```
 
 Consider **`@book` entries only** — the librarian manages books, so non-book entries

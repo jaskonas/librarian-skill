@@ -24,7 +24,7 @@ For each book note, build an `upsert` payload from its frontmatter — `author` 
 `authors[0]`, plus `title`, `year`, `isbn`, `publisher`:
 
 ```bash
-python scripts/bibtools.py upsert --bib "<bib_path>" --json '{"type":"book","citekey":"<citekey-if-present>","author":"<authors[0]>","fields":{"author":"<authors[0]>","title":"<title>","year":"<year>","isbn":"<isbn>","publisher":"<publisher>"}}'
+python "${CLAUDE_PLUGIN_ROOT}/skills/librarian/scripts/bibtools.py" upsert --bib "<bib_path>" --json '{"type":"book","citekey":"<citekey-if-present>","author":"<authors[0]>","fields":{"author":"<authors[0]>","title":"<title>","year":"<year>","isbn":"<isbn>","publisher":"<publisher>"}}'
 ```
 
 - **Note has a `citekey`:** include it in the payload. `upsert` matches by citekey and
@@ -34,7 +34,7 @@ python scripts/bibtools.py upsert --bib "<bib_path>" --json '{"type":"book","cit
   `.bib` under a different note:
 
   ```bash
-  python scripts/bibtools.py match --bib "<bib_path>" --isbn "<isbn>" --title "<title>" --author "<authors[0]>"
+  python "${CLAUDE_PLUGIN_ROOT}/skills/librarian/scripts/bibtools.py" match --bib "<bib_path>" --isbn "<isbn>" --title "<title>" --author "<authors[0]>"
   ```
 
   Omit any flag whose value is missing. This prints a JSON array of candidates

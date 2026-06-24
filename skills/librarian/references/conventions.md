@@ -77,28 +77,31 @@ stays consistent with whatever is already in the `.bib` file.
 
 ## The bibtools CLI
 
-All `.bib` file reads and writes go through `scripts/bibtools.py`. Never hand-edit a
-`.bib` file or reimplement BibTeX parsing — shell out to the script. Its six commands:
+All `.bib` file reads and writes go through the bundled `bibtools.py`. Never hand-edit a
+`.bib` file or reimplement BibTeX parsing — shell out to the script. It lives at
+`${CLAUDE_PLUGIN_ROOT}/skills/librarian/scripts/bibtools.py` (`${CLAUDE_PLUGIN_ROOT}` is the
+plugin's install dir — see SKILL.md, where Claude substitutes its real absolute value; use
+that path in the commands below). Its six commands:
 
 ```bash
 # Validate and normalize an ISBN (exit 0 + prints normalized form if valid; exit 1 + stderr "invalid" otherwise)
-python scripts/bibtools.py check-isbn 9780812979688
+python "${CLAUDE_PLUGIN_ROOT}/skills/librarian/scripts/bibtools.py" check-isbn 9780812979688
 
 # Parse a .bib file into a JSON array of entries
-python scripts/bibtools.py parse Library/library.bib
+python "${CLAUDE_PLUGIN_ROOT}/skills/librarian/scripts/bibtools.py" parse Library/library.bib
 
 # Mint a new citekey (AuthorYear + collision suffix) against an existing .bib file
-python scripts/bibtools.py mint-key --bib Library/library.bib --author "Taleb" --year 2012
+python "${CLAUDE_PLUGIN_ROOT}/skills/librarian/scripts/bibtools.py" mint-key --bib Library/library.bib --author "Taleb" --year 2012
 
 # Insert or update an entry by citekey (mints one if omitted; prints the citekey used)
-python scripts/bibtools.py upsert --bib Library/library.bib --json '{"type":"book","author":"Taleb","fields":{"title":"Antifragile","year":"2012"}}'
+python "${CLAUDE_PLUGIN_ROOT}/skills/librarian/scripts/bibtools.py" upsert --bib Library/library.bib --json '{"type":"book","author":"Taleb","fields":{"title":"Antifragile","year":"2012"}}'
 
 # Find best-matching .bib entries for a note being adopted (prints a JSON array of
 # {citekey, score, fields}, or [] if nothing matches); omit any of --isbn/--title/--author you lack
-python scripts/bibtools.py match --bib Library/library.bib --isbn 9780812979688 --title "Antifragile" --author "Taleb"
+python "${CLAUDE_PLUGIN_ROOT}/skills/librarian/scripts/bibtools.py" match --bib Library/library.bib --isbn 9780812979688 --title "Antifragile" --author "Taleb"
 
 # Import a Goodreads export into a JSON array of book dicts
-python scripts/bibtools.py import-goodreads export.csv
+python "${CLAUDE_PLUGIN_ROOT}/skills/librarian/scripts/bibtools.py" import-goodreads export.csv
 ```
 
 The `upsert` payload shape is `{"type": "book", "citekey": "<optional>", "author":

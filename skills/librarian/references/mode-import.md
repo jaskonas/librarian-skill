@@ -17,7 +17,7 @@ Read `references/conventions.md` and `references/provenance.md` first. Load
 1. Parse the file:
 
    ```bash
-   python scripts/bibtools.py parse "<bib_path>"
+   python "${CLAUDE_PLUGIN_ROOT}/skills/librarian/scripts/bibtools.py" parse "<bib_path>"
    ```
 
 2. Keep only entries whose `type` is `book`; skip all others. For each remaining entry,
@@ -39,7 +39,7 @@ Read `references/conventions.md` and `references/provenance.md` first. Load
 - **Goodreads CSV:** convert the export to book dicts:
 
   ```bash
-  python scripts/bibtools.py import-goodreads <export.csv>
+  python "${CLAUDE_PLUGIN_ROOT}/skills/librarian/scripts/bibtools.py" import-goodreads <export.csv>
   ```
 
   Each dict has `title`, `authors`, `year`, `isbn`, `rating`, `status`, `pages`,

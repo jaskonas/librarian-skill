@@ -10,7 +10,16 @@ canonical** — book notes drive the `.bib`. State lives visibly in the vault un
 configurable folder (default `Library/`), never in this skill.
 
 Deterministic work (`.bib` parse/write, citekey minting, ISBN checks, CSV import) is done by
-`scripts/bibtools.py` (Python stdlib only). Vault I/O goes through the **obsidian-cli** skill.
+a bundled Python helper (stdlib only). Vault I/O goes through the **obsidian-cli** skill.
+
+**Running the helper.** This skill ships as a plugin; its scripts live at
+`${CLAUDE_PLUGIN_ROOT}/skills/librarian/scripts/`. `${CLAUDE_PLUGIN_ROOT}` is the absolute
+path to the plugin's install directory — Claude substitutes it in this file, so the line
+above resolves to a real path in your session. The mode playbooks invoke the helper as
+`python "${CLAUDE_PLUGIN_ROOT}/skills/librarian/scripts/bibtools.py" …`; when you run those
+commands, use that absolute path (substitute the value shown here), not a bare
+`scripts/bibtools.py`. The path is written this way so it stays correct whether this is its
+own plugin or nested as `skills/librarian/` inside a larger plugin.
 
 **Scope (v1): books only.** The librarian manages `@book` entries and their book notes. A
 `.bib` may also contain non-book material (`@article`, `@techreport`, `@misc`, archival
