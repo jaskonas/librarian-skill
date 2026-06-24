@@ -205,6 +205,40 @@ def parse_goodreads_csv(text):
     return books
 
 
+def normalize_title(s):
+    if not s:
+        return ""
+    s = s.lower()
+    s = re.sub(r"^(the|a|an)\s+", "", s)
+    s = re.sub(r"[^a-z0-9 ]", "", s)
+    return " ".join(s.split())
+
+
+def match_entries(entries, isbn=None, title=None, author=None):
+    norm_isbn = normalize_isbn(isbn) if isbn else None
+    norm_title = normalize_title(title) if title else None
+    want_surname = surname_of(author).lower() if author else None
+    results = []
+    for e in entries:
+        f = e.get("fields", {})
+        score = 0
+        e_isbn = normalize_isbn(f.get("isbn", "")) if f.get("isbn") else None
+        if norm_isbn and e_isbn and e_isbn == norm_isbn:
+            score = 100
+        elif norm_title:
+            e_title = normalize_title(f.get("title", ""))
+            if e_title and e_title == norm_title:
+                score = 60
+            elif e_title and (norm_title in e_title or e_title in norm_title):
+                score = 40
+            if score and want_surname and surname_of(f.get("author", "")).lower() == want_surname:
+                score += 30
+        if score >= 40:
+            results.append({"citekey": e["citekey"], "score": score, "fields": f})
+    results.sort(key=lambda r: r["score"], reverse=True)
+    return results
+
+
 def _read_bib(path):
     if path and _os.path.exists(path):
         with open(path) as f:

@@ -149,3 +149,41 @@ def test_format_entry_sorts_extra_fields_after_defaults():
              "fields": {"note": "n", "abstract": "a", "year": "2000", "author": "A"}}
     out = bibtools.format_entry(entry)
     assert out.index("author") < out.index("year") < out.index("abstract") < out.index("note")
+
+
+def test_normalize_title():
+    assert bibtools.normalize_title("The Great Gatsby!") == "great gatsby"
+    assert bibtools.normalize_title("A Theory of Justice") == "theory of justice"
+    assert bibtools.normalize_title("") == ""
+
+
+def _entries():
+    return [
+        {"type": "book", "citekey": "MacIntyre1981",
+         "fields": {"author": "MacIntyre, Alasdair", "title": "After Virtue",
+                    "year": "1981", "isbn": "9780268006112"}},
+        {"type": "book", "citekey": "Taylor1989",
+         "fields": {"author": "Taylor, Charles", "title": "Sources of the Self", "year": "1989"}},
+    ]
+
+
+def test_match_by_isbn_is_definitive():
+    res = bibtools.match_entries(_entries(), isbn="978-0-268-00611-2")
+    assert res[0]["citekey"] == "MacIntyre1981"
+    assert res[0]["score"] == 100
+
+
+def test_match_by_title_and_author():
+    res = bibtools.match_entries(_entries(), title="The Sources of the Self", author="Charles Taylor")
+    assert res[0]["citekey"] == "Taylor1989"
+    assert res[0]["score"] == 90  # contained title (40) + surname (30)... see scoring
+
+
+def test_match_exact_title_no_author():
+    res = bibtools.match_entries(_entries(), title="After Virtue")
+    assert res[0]["citekey"] == "MacIntyre1981"
+    assert res[0]["score"] == 60
+
+
+def test_match_none():
+    assert bibtools.match_entries(_entries(), title="Being and Time", author="Heidegger") == []
