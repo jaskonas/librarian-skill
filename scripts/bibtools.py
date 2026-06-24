@@ -258,6 +258,9 @@ def main(argv=None):
     p = sub.add_parser("upsert")
     p.add_argument("--bib", required=True); p.add_argument("--json", required=True)
     p = sub.add_parser("import-goodreads"); p.add_argument("csvfile")
+    p = sub.add_parser("match")
+    p.add_argument("--bib", required=True)
+    p.add_argument("--isbn"); p.add_argument("--title"); p.add_argument("--author")
 
     args = parser.parse_args(argv)
 
@@ -293,6 +296,11 @@ def main(argv=None):
     if args.cmd == "import-goodreads":
         with open(args.csvfile) as f:
             print(_json.dumps(parse_goodreads_csv(f.read()), indent=2)); return 0
+
+    if args.cmd == "match":
+        entries = _read_bib(args.bib)
+        res = match_entries(entries, isbn=args.isbn, title=args.title, author=args.author)
+        print(_json.dumps(res, indent=2)); return 0
 
     return 2
 

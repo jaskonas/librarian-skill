@@ -187,3 +187,15 @@ def test_match_exact_title_no_author():
 
 def test_match_none():
     assert bibtools.match_entries(_entries(), title="Being and Time", author="Heidegger") == []
+
+
+def test_cli_match(tmp_path):
+    bib = tmp_path / "x.bib"
+    bib.write_text("@book{Taylor1989,\n  author = {Taylor, Charles},\n  title = {Sources of the Self},\n  year = {1989}\n}\n")
+    out = _run("match", "--bib", str(bib), "--title", "Sources of the Self", "--author", "Charles Taylor")
+    assert out.returncode == 0
+    res = json.loads(out.stdout)
+    assert res[0]["citekey"] == "Taylor1989"
+    # no-match prints empty array
+    out2 = _run("match", "--bib", str(bib), "--title", "Being and Time")
+    assert json.loads(out2.stdout) == []
