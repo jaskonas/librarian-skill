@@ -1,4 +1,4 @@
-import sys, os
+import sys, os, subprocess, json
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 import bibtools
 
@@ -19,8 +19,6 @@ def test_valid_isbn10():
     assert bibtools.valid_isbn("0-268-00594-X") is True
     assert bibtools.valid_isbn("0-268-00594-1") is False
 
-
-import os
 
 FIX = os.path.join(os.path.dirname(__file__), "fixtures")
 
@@ -101,8 +99,6 @@ def test_parse_goodreads_csv():
     assert books[1]["rating"] == ""             # 0 rating becomes empty
 
 
-import subprocess, json
-
 SCRIPT = os.path.join(os.path.dirname(__file__), "..", "bibtools.py")
 
 
@@ -138,3 +134,18 @@ def test_cli_upsert_mints_key(tmp_path):
     assert out.returncode == 0
     assert out.stdout.strip() == "MacIntyre1981"
     assert "MacIntyre1981" in bib.read_text()
+
+
+def test_surname_of_degenerate_input():
+    # Empty / punctuation-only authors degrade to "" rather than raising.
+    assert bibtools.surname_of("") == ""
+    assert bibtools.surname_of("Plato") == "Plato"          # single name
+    assert bibtools.surname_of("Hannah Arendt") == "Arendt"
+
+
+def test_format_entry_sorts_extra_fields_after_defaults():
+    # Non-default fields follow the five ordered ones, alphabetically.
+    entry = {"type": "book", "citekey": "X2000",
+             "fields": {"note": "n", "abstract": "a", "year": "2000", "author": "A"}}
+    out = bibtools.format_entry(entry)
+    assert out.index("author") < out.index("year") < out.index("abstract") < out.index("note")

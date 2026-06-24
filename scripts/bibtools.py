@@ -3,7 +3,14 @@
 Standard library only. Exposes a CLI (see main()) that the skill's mode
 playbooks shell out to, plus importable functions used by the tests.
 """
+import argparse as _argparse
+import csv as _csv
+import io as _io
+import json as _json
+import os as _os
 import re
+import string as _string
+import sys as _sys
 
 
 def normalize_isbn(raw):
@@ -125,11 +132,6 @@ def write_bib(entries):
     return "\n\n".join(format_entry(e) for e in entries) + "\n"
 
 
-import csv as _csv
-import io as _io
-import string as _string
-
-
 def surname_of(author_field):
     first = author_field.split(" and ")[0].strip().strip("{}")
     if "," in first:
@@ -201,12 +203,6 @@ def parse_goodreads_csv(text):
             "date_finished": ((row.get("Date Read", "") or "") or "").strip().replace("/", "-"),
         })
     return books
-
-
-import argparse as _argparse
-import json as _json
-import sys as _sys
-import os as _os
 
 
 def _read_bib(path):
